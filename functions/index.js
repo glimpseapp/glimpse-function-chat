@@ -67,10 +67,21 @@ app.post('/chat/:chat_id/message', (req, res) => {
     const message = {
         author_id: req.user.uid,
         time: Date.now(),
-        type: req.body.type,
-        text: req.body.text,
-        receipts: []
+        type: req.body.type
     }
+
+    switch(req.body.type) {
+        case 'text':
+            message['text'] = req.body.text;
+            break;
+        case 'glimpse':
+            message['asset_name'] = req.body.asset_name;
+            break;
+        case 'glimpse_narrative':
+            message['asset_name'] = req.body.asset_name;
+            message['path_id'] = req.body.path_id;
+    }
+
     admin.database().ref(`/chat/chat_by_id/${req.params.chat_id}/messages`).push(message, function (error) {
         if (error)
             return res.send({error: error})
